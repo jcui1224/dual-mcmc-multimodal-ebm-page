@@ -142,6 +142,92 @@
       border-top: 1px solid var(--border);
       margin: 0;
     }
+
+    .bibtex-card {
+        background: linear-gradient(145deg, #1a212b 0%, #1e2733 55%, #202b38 100%);
+        border: 1px solid #344252;
+        border-radius: 12px;
+        box-shadow: 0 12px 28px rgba(8, 12, 18, 0.38);
+        overflow: hidden;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .bibtex-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 16px 32px rgba(8, 12, 18, 0.5);
+    }
+
+    .bibtex-toolbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: linear-gradient(90deg, #222d3a 0%, #253242 100%);
+        border-bottom: 1px solid #3a4a5d;
+        padding: 0.55rem 0.8rem;
+    }
+
+    .bibtex-title {
+        font-size: 0.82rem;
+        color: #c0cfdf;
+        letter-spacing: 0.04em;
+        font-weight: 700;
+        text-transform: uppercase;
+    }
+
+    .bibtex-actions {
+        display: flex;
+        gap: 0.45rem;
+    }
+
+    .copy-bibtex-btn,
+    .toggle-bibtex-btn {
+        border: 1px solid #4b6178;
+        background: #2a3645;
+        color: #d4e1ee;
+        border-radius: 7px;
+        padding: 0.3rem 0.55rem;
+        font-size: 0.8rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.15s ease;
+    }
+
+    .copy-bibtex-btn:hover,
+    .toggle-bibtex-btn:hover {
+        background: #324152;
+        border-color: #607b97;
+        box-shadow: 0 0 0 3px rgba(96, 123, 151, 0.22);
+    }
+
+    .copy-bibtex-btn.copied {
+        background: #eaf9ef;
+        border-color: #8dc4a0;
+        color: #23653a;
+    }
+
+    .bibtex-code {
+        margin: 0;
+        padding: 0 1.1rem;
+        background: linear-gradient(160deg, #171f29 0%, #1a2430 55%, #1e2a38 100%);
+        overflow: hidden;
+        max-height: 0;
+        transition: max-height 0.25s ease, padding 0.25s ease;
+    }
+
+    .bibtex-code.is-open {
+        padding: 1rem 1.1rem;
+        max-height: 560px;
+        overflow: auto;
+    }
+
+    .bibtex-code code {
+        font-family: 'JetBrains Mono', 'SFMono-Regular', Menlo, Consolas, monospace;
+        font-size: 0.9rem;
+        line-height: 1.7;
+        color: #d3dee9;
+        white-space: pre;
+        display: block;
+    }
   </style>
 </head>
 
@@ -236,7 +322,15 @@
     <div class="columns is-centered">
       <div class="column is-10">
         <h2 class="sec-title">BibTeX</h2>
-        <pre><code>@article{
+        <div class="bibtex-card">
+          <div class="bibtex-toolbar">
+            <span class="bibtex-title">Citation Entry</span>
+            <div class="bibtex-actions">
+              <button id="toggleBibtexBtn" class="toggle-bibtex-btn" type="button" aria-expanded="false">Expand</button>
+              <button id="copyBibtexBtn" class="copy-bibtex-btn" type="button">Copy</button>
+            </div>
+          </div>
+          <pre id="bibtexBlock" class="bibtex-code"><code id="bibtexText">@article{
 cui2026learning,
 title={Learning Multimodal Energy-Based Model with Multimodal Variational Auto-Encoder via {MCMC} Revision},
 author={Jiali Cui and Zhiqiang Lao and Heather Yu},
@@ -246,6 +340,7 @@ year={2026},
 url={https://openreview.net/forum?id=ZVD7bHNpY1},
 note={}
 }</code></pre>
+        </div>
       </div>
     </div>
   </div>
@@ -253,6 +348,35 @@ note={}
 
 
 <script src="./static/js/jquery.min.js"></script>
+<script>
+    (function () {
+        var toggleBtn = document.getElementById('toggleBibtexBtn');
+        var bibtexBlock = document.getElementById('bibtexBlock');
+        var copyBtn = document.getElementById('copyBibtexBtn');
+        var bibtexText = document.getElementById('bibtexText');
+
+        if (toggleBtn && bibtexBlock) {
+            toggleBtn.addEventListener('click', function () {
+                var isOpen = bibtexBlock.classList.toggle('is-open');
+                toggleBtn.textContent = isOpen ? 'Collapse' : 'Expand';
+                toggleBtn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+            });
+        }
+
+        if (copyBtn && bibtexText && navigator.clipboard) {
+            copyBtn.addEventListener('click', function () {
+                navigator.clipboard.writeText(bibtexText.textContent).then(function () {
+                    copyBtn.textContent = 'Copied';
+                    copyBtn.classList.add('copied');
+                    setTimeout(function () {
+                        copyBtn.textContent = 'Copy';
+                        copyBtn.classList.remove('copied');
+                    }, 1400);
+                });
+            });
+        }
+    })();
+</script>
 
 </body>
 </html>
